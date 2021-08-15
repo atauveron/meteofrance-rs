@@ -7,12 +7,12 @@ use std::fmt;
 pub struct Place {
     pub lat: f32,
     pub lon: f32,
-    pub alti: i16,
+    pub alti: Option<i16>,
     pub name: String,
     pub country: String,
     pub dept: Option<String>,
     pub rain_product_available: Option<u8>,
-    pub timezone: String,
+    pub timezone: Option<String>,
     pub insee: Option<String>,
 }
 

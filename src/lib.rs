@@ -5,6 +5,7 @@ mod model;
 use std::time::Duration;
 
 use model::forecast::ForecastResponse;
+use model::place::Place;
 use model::rain::RainResponse;
 
 pub struct MeteoFranceClient {
@@ -92,6 +93,44 @@ impl MeteoFranceClient {
             Err(err) => Err(err.to_string()),
         }
     }
+
+    /// Search the places (cities) linked to a query by name
+    /// Add GPS coordinates in parameter to search places around a given location.
+    pub fn search_places(
+        &self,
+        query: &str,
+        latitude: Option<f32>,
+        longitude: Option<f32>,
+    ) -> Result<Vec<Place>, String> {
+        let mut target = format!(
+            "{}/places?token={}&q={}",
+            constants::METEOFRANCE_API_URL,
+            self.token,
+            query
+        );
+        match latitude {
+            Some(lat) => target.push_str(&format!("&lat={}", lat)),
+            None => (),
+        };
+        match longitude {
+            Some(lon) => target.push_str(&format!("&lon={}", lon)),
+            None => (),
+        };
+        let response = ureq::get(&target)
+            .timeout(Duration::from_secs(10))
+            .call()
+            .unwrap();
+        if response.status() < 200 || response.status() > 299 {
+            return Err(format!("Request failed: {}", response.status_text()));
+        }
+        // let places = response.into_string();
+        let places = response.into_json::<Vec<Place>>();
+        // let forecast = response.into_string();
+        match places {
+            Ok(json) => Ok(json),
+            Err(err) => Err(err.to_string()),
+        }
+    }
 }
 
 pub enum Language {
@@ -119,5 +158,22 @@ mod tests {
         let client = MeteoFranceClient::new();
         let result = client.get_rain(48.85, 2.35, None).unwrap();
         println!("Rain forecast\n---\n{:#?}\n---\n", result);
+    }
+    #[test]
+    fn test_places_name() {
+        let client = MeteoFranceClient::new();
+        let result = client.search_places("Paris", None, None).unwrap();
+        println!("Places search for \"Paris\"\n---\n{:#?}\n---\n", result);
+    }
+    #[test]
+    fn test_places_lat_lon() {
+        let client = MeteoFranceClient::new();
+        let result = client
+            .search_places("Paris", Some(48.85), Some(2.35))
+            .unwrap();
+        println!(
+            "Places search for \"Paris\" near 48.85, 2.35\n---\n{:#?}\n---\n",
+            result
+        );
     }
 }
