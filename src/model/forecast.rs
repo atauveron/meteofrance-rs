@@ -24,7 +24,7 @@ pub struct DailyForecast {
     pub humidity: Humidity,
     pub uv: Option<u8>,
     #[serde(rename = "weather12H")]
-    pub weather_12h: Weather,
+    pub weather_12h: Option<Weather>,
     pub sun: RiseSet,
 }
 
@@ -60,16 +60,16 @@ pub struct ProbabilityForecast {
 #[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 pub struct TemperatureDaily {
-    pub min: f32,
-    pub max: f32,
+    pub min: Option<f32>,
+    pub max: Option<f32>,
     pub sea: Option<f32>,
 }
 
 #[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 pub struct Humidity {
-    pub min: u8,
-    pub max: u8,
+    pub min: Option<u8>,
+    pub max: Option<u8>,
 }
 
 #[allow(dead_code)]
