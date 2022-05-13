@@ -1,10 +1,13 @@
 //! A rust client for MétéoFrance's private API
+#![forbid(unsafe_code)]
+
 mod constants;
 mod model;
 
 use std::time::Duration;
 
 use model::forecast::ForecastResponse;
+use model::forecast_v2::ForecastResponse as ForecastResponseV2;
 use model::place::Place;
 use model::rain::RainResponse;
 
@@ -55,6 +58,38 @@ impl MeteoFranceClient {
             return Err(format!("Request failed: {}", response.status_text()));
         }
         let forecast = response.into_json::<ForecastResponse>();
+        match forecast {
+            Ok(json) => Ok(json),
+            Err(err) => Err(err.to_string()),
+        }
+    }
+
+    /// Retrieve the weather forecast for a given location (using V2 API).
+    pub fn get_forecast_v2(
+        &self,
+        latitude: f32,
+        longitude: f32,
+        lang: Option<Language>,
+    ) -> Result<ForecastResponseV2, String> {
+        let target = format!(
+            "{}/v2/forecast?token={}&lat={}&lon={}&lang={}",
+            constants::METEOFRANCE_API_URL,
+            self.token,
+            latitude,
+            longitude,
+            match lang.unwrap_or_default() {
+                Language::French => "fr",
+                Language::English => "en",
+            }
+        );
+        let response = ureq::get(&target)
+            .timeout(Duration::from_secs(10))
+            .call()
+            .unwrap();
+        if response.status() < 200 || response.status() > 299 {
+            return Err(format!("Request failed: {}", response.status_text()));
+        }
+        let forecast = response.into_json::<ForecastResponseV2>();
         match forecast {
             Ok(json) => Ok(json),
             Err(err) => Err(err.to_string()),
@@ -151,6 +186,12 @@ mod tests {
     fn test_forecast() {
         let client = MeteoFranceClient::new();
         let result = client.get_forecast(48.85, 2.35, None).unwrap();
+        println!("Weather forecast\n---\n{:#?}\n---\n", result);
+    }
+    #[test]
+    fn test_forecast_v2() {
+        let client = MeteoFranceClient::new();
+        let result = client.get_forecast_v2(48.85, 2.35, None).unwrap();
         println!("Weather forecast\n---\n{:#?}\n---\n", result);
     }
     #[test]
