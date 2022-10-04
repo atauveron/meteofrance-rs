@@ -2,7 +2,7 @@
 name = "meteofrance-rs"
 version = "0.1.0"
 authors = ["Aimery Tauveron <atauveron@via.ecp.fr>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 chrono = "0.4"
