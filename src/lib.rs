@@ -1,4 +1,4 @@
-//! A rust client for MétéoFrance's private API
+//! A rust client library for MétéoFrance's private API
 #![forbid(unsafe_code)]
 
 mod constants;
