@@ -1,3 +1,5 @@
+//! A simple wrapper for performing HTTP requests using `ureq`
+
 use std::time::Duration;
 
 use crate::constants::*;

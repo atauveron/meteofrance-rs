@@ -1,3 +1,7 @@
+//! Functions for building URLs for various APIs
+//!
+//! These APIs appear to expect GET requests, all parameters are encoded in the URL itself.
+
 use crate::constants::*;
 
 /// Build the URL for the weather forecast at a given location.
@@ -70,6 +74,7 @@ pub fn rain_url(
 }
 
 /// Build the URL for searching the places (cities) linked to a query by name.
+///
 /// Add GPS coordinates in parameter to search places around a given location.
 pub fn search_places_url(
     query: &str,
@@ -86,17 +91,18 @@ pub fn search_places_url(
         },
         query
     );
-    match latitude {
-        Some(lat) => url.push_str(&format!("&lat={}", lat)),
-        None => (),
+    if let Some(lat) = latitude {
+        url.push_str(&format!("&lat={}", lat))
     };
-    match longitude {
-        Some(lon) => url.push_str(&format!("&lon={}", lon)),
-        None => (),
+    if let Some(lon) = longitude {
+        url.push_str(&format!("&lon={}", lon))
     };
     url
 }
 
+/// Language (defaults to French)
+///
+/// This parameter defines the language used for description fields.
 pub enum Language {
     French,
     English,
