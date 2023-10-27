@@ -51,7 +51,7 @@ pub struct DailyForecast {
     pub t_sea: Option<f32>,
     pub relative_humidity_min: Option<u8>,
     pub relative_humidity_max: Option<u8>,
-    pub total_precipitation_24h: f32,
+    pub total_precipitation_24h: Option<f32>,
     pub uv_index: Option<u8>,
     // TODO Icons
     pub sunrise_time: String,
@@ -88,9 +88,9 @@ pub struct Forecast {
     // FIXME This field is either an altitude (u16) or string "Non pertinent"
     // #[serde(rename = "rain snow limit")]
     // pub rain_snow_limit: u16,
-    pub total_cloud_cover: u8,
-    weather_icon: String,
-    pub weather_description: String,
+    pub total_cloud_cover: Option<u8>,
+    weather_icon: Option<String>,
+    pub weather_description: Option<String>,
 }
 
 #[allow(dead_code)]
