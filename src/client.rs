@@ -129,35 +129,99 @@ mod tests {
     #[test]
     fn test_forecast() {
         let client = MeteoFranceClient::new();
+        // Paris
         let result = client.get_forecast(48.85, 2.35, None).unwrap();
-        println!("Weather forecast\n---\n{:#?}\n---\n", result);
+        println!("Weather forecast for Paris\n---\n{:#?}\n---\n", result);
+        // Ouessant
+        let result = client.get_forecast(48.47, -5.10, None).unwrap();
+        println!("Weather forecast for Ouessant\n---\n{:#?}\n---\n", result);
+        // Briançon
+        let result = client.get_forecast(44.88, 6.63, None).unwrap();
+        println!("Weather forecast for Briançon\n---\n{:#?}\n---\n", result);
     }
     #[test]
     fn test_forecast_v2() {
         let client = MeteoFranceClient::new();
+        // Paris
         let result = client.get_forecast_v2(48.85, 2.35, None).unwrap();
-        println!("Weather forecast\n---\n{:#?}\n---\n", result);
+        println!("Weather forecast for Paris\n---\n{:#?}\n---\n", result);
+        // Ouessant
+        let result = client.get_forecast_v2(48.47, -5.10, None).unwrap();
+        println!("Weather forecast for Ouessant\n---\n{:#?}\n---\n", result);
+        // Briançon
+        let result = client.get_forecast_v2(44.88, 6.63, None).unwrap();
+        println!("Weather forecast for Briançon\n---\n{:#?}\n---\n", result);
     }
     #[test]
     fn test_rain() {
         let client = MeteoFranceClient::new();
+        // Paris
         let result = client.get_rain(48.85, 2.35, None).unwrap();
-        println!("Rain forecast\n---\n{:#?}\n---\n", result);
+        println!("Rain forecast for Paris\n---\n{:#?}\n---\n", result);
+        // Ouessant
+        let result = client.get_rain(48.47, -5.10, None).unwrap();
+        println!("Rain forecast for Ouessant\n---\n{:#?}\n---\n", result);
+        // Briançon
+        let result = client.get_rain(44.88, 6.63, None).unwrap();
+        println!("Rain forecast for Briançon\n---\n{:#?}\n---\n", result);
     }
     #[test]
     fn test_places_name() {
         let client = MeteoFranceClient::new();
+        // Paris
         let result = client.search_places("Paris", None, None).unwrap();
         println!("Places search for \"Paris\"\n---\n{:#?}\n---\n", result);
+        // Ouessant
+        let result = client.search_places("Ouessant", None, None).unwrap();
+        println!("Places search for \"Ouessant\"\n---\n{:#?}\n---\n", result);
+        // Briançon
+        let result = client.search_places("Briançon", None, None).unwrap();
+        println!("Places search for \"Briançon\"\n---\n{:#?}\n---\n", result);
     }
     #[test]
     fn test_places_lat_lon() {
         let client = MeteoFranceClient::new();
+        // Paris
         let result = client
             .search_places("Paris", Some(48.85), Some(2.35))
             .unwrap();
         println!(
             "Places search for \"Paris\" near 48.85, 2.35\n---\n{:#?}\n---\n",
+            result
+        );
+        // Ouessant
+        let result = client
+            .search_places("Ouessant", Some(48.47), Some(-5.10))
+            .unwrap();
+        println!(
+            "Places search for \"Ouessant\" near 48.47, -5.10\n---\n{:#?}\n---\n",
+            result
+        );
+        // Briançon
+        let result = client
+            .search_places("Briançon", Some(44.88), Some(6.63))
+            .unwrap();
+        println!(
+            "Places search for \"Briançon\" near 48.47, -5.10\n---\n{:#?}\n---\n",
+            result
+        );
+    }
+    #[test]
+    fn test_places_error() {
+        let client = MeteoFranceClient::new();
+        // Unknown name
+        let result = client.search_places("Not a town name", None, None).unwrap();
+        assert!(result.is_empty());
+        println!(
+            "Places search for \"Not a town name\"\n---\n{:#?}\n---\n",
+            result
+        );
+        // Search for Paris in the Atlantic Ocean
+        let result = client
+            .search_places("Paris", Some(50.00), Some(-30.00))
+            .unwrap();
+        println!(
+            "Places search for \"Paris\" near 50.00, -30.00\n---\n{:#?}\n---\n",
             result
         );
     }

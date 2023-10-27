@@ -103,13 +103,9 @@ pub fn search_places_url(
 /// Language (defaults to French)
 ///
 /// This parameter defines the language used for description fields.
+#[derive(Default)]
 pub enum Language {
+    #[default]
     French,
     English,
-}
-
-impl Default for Language {
-    fn default() -> Self {
-        Language::French
-    }
 }
