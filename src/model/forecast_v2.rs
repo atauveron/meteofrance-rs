@@ -93,6 +93,7 @@ pub struct Forecast {
     pub weather_description: Option<String>,
 }
 
+/// The `ProbabilityForecast` struct contains information about the probability of various hazards.
 #[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 pub struct ProbabilityForecast {

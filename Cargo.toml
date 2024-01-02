@@ -1,6 +1,6 @@
 [package]
 name = "meteofrance-rs"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Aimery Tauveron <atauveron@via.ecp.fr>"]
 description = "An unofficial client library for Météo-France's API"
 repository = "https://github.com/atauveron/meteofrance-rs"
