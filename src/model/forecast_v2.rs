@@ -53,7 +53,8 @@ pub struct DailyForecast {
     pub relative_humidity_max: Option<u8>,
     pub total_precipitation_24h: Option<f32>,
     pub uv_index: Option<u8>,
-    // TODO Icons
+    pub daily_weather_icon: Option<String>,
+    pub daily_weather_description: Option<String>,
     pub sunrise_time: String,
     pub sunset_time: String,
 }
@@ -73,7 +74,7 @@ pub struct Forecast {
     pub wind_speed: Option<f32>,
     pub wind_speed_gust: Option<f32>,
     pub wind_direction: Option<i32>,
-    wind_icon: Option<String>,
+    pub wind_icon: Option<String>,
     pub rain_1h: Option<f32>,
     pub rain_3h: Option<f32>,
     pub rain_6h: Option<f32>,
@@ -89,7 +90,7 @@ pub struct Forecast {
     // #[serde(rename = "rain snow limit")]
     // pub rain_snow_limit: u16,
     pub total_cloud_cover: Option<u8>,
-    weather_icon: Option<String>,
+    pub weather_icon: Option<String>,
     pub weather_description: Option<String>,
 }
 

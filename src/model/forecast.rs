@@ -100,7 +100,7 @@ pub struct Wind {
     pub speed: f32,
     pub gust: f32,
     pub direction: i32,
-    icon: String,
+    pub icon: String,
 }
 
 #[allow(dead_code)]
