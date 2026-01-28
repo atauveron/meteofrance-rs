@@ -1,6 +1,6 @@
 [package]
 name = "meteofrance-rs"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Aimery Tauveron <atauveron@via.ecp.fr>"]
 description = "An unofficial client library for Météo-France's API"
 repository = "https://github.com/atauveron/meteofrance-rs"
@@ -13,7 +13,8 @@ chrono = "0.4"
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-ureq = { version = "2.0", features = ["tls", "json"], optional = true }
+urlencoding = "2"
+ureq = { version = "3", features = ["rustls", "json"], optional = true }
 
 [features]
 ureq = ["dep:ureq"]

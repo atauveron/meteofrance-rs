@@ -2,6 +2,8 @@
 //!
 //! These APIs appear to expect GET requests, all parameters are encoded in the URL itself.
 
+use urlencoding::encode;
+
 use crate::constants::*;
 
 /// Build the URL for the weather forecast at a given location.
@@ -89,7 +91,7 @@ pub fn search_places_url(
             None => METEOFRANCE_API_TOKEN,
             Some(t) => t,
         },
-        query
+        encode(query)
     );
     if let Some(lat) = latitude {
         url.push_str(&format!("&lat={}", lat))

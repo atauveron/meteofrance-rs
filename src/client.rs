@@ -38,14 +38,15 @@ impl MeteoFranceClient {
         lang: Option<Language>,
     ) -> Result<ForecastResponse, String> {
         let target = forecast_url(latitude, longitude, lang, Some(&self.token));
-        let response = ureq::get(&target)
-            .timeout(Duration::from_secs(10))
-            .call()
-            .unwrap();
-        if response.status() < 200 || response.status() > 299 {
-            return Err(format!("Request failed: {}", response.status_text()));
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .timeout_global(Some(Duration::from_secs(10)))
+            .build()
+            .into();
+        let mut response = agent.get(&target).call().unwrap();
+        if !response.status().is_success() {
+            return Err(format!("Request failed: {}", response.status().as_str()));
         }
-        let forecast = response.into_json::<ForecastResponse>();
+        let forecast = response.body_mut().read_json::<ForecastResponse>();
         match forecast {
             Ok(json) => Ok(json),
             Err(err) => Err(err.to_string()),
@@ -60,14 +61,15 @@ impl MeteoFranceClient {
         lang: Option<Language>,
     ) -> Result<ForecastResponseV2, String> {
         let target = forecast_v2_url(latitude, longitude, lang, Some(&self.token));
-        let response = ureq::get(&target)
-            .timeout(Duration::from_secs(10))
-            .call()
-            .unwrap();
-        if response.status() < 200 || response.status() > 299 {
-            return Err(format!("Request failed: {}", response.status_text()));
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .timeout_global(Some(Duration::from_secs(10)))
+            .build()
+            .into();
+        let mut response = agent.get(&target).call().unwrap();
+        if !response.status().is_success() {
+            return Err(format!("Request failed: {}", response.status().as_str()));
         }
-        let forecast = response.into_json::<ForecastResponseV2>();
+        let forecast = response.body_mut().read_json::<ForecastResponseV2>();
         match forecast {
             Ok(json) => Ok(json),
             Err(err) => Err(err.to_string()),
@@ -82,14 +84,15 @@ impl MeteoFranceClient {
         lang: Option<Language>,
     ) -> Result<RainResponse, String> {
         let target = rain_url(latitude, longitude, lang, Some(&self.token));
-        let response = ureq::get(&target)
-            .timeout(Duration::from_secs(10))
-            .call()
-            .unwrap();
-        if response.status() < 200 || response.status() > 299 {
-            return Err(format!("Request failed: {}", response.status_text()));
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .timeout_global(Some(Duration::from_secs(10)))
+            .build()
+            .into();
+        let mut response = agent.get(&target).call().unwrap();
+        if !response.status().is_success() {
+            return Err(format!("Request failed: {}", response.status().as_str()));
         }
-        let forecast = response.into_json::<RainResponse>();
+        let forecast = response.body_mut().read_json::<RainResponse>();
         // let forecast = response.into_string();
         match forecast {
             Ok(json) => Ok(json),
@@ -106,15 +109,17 @@ impl MeteoFranceClient {
         longitude: Option<f32>,
     ) -> Result<Vec<Place>, String> {
         let target = search_places_url(query, latitude, longitude, Some(&self.token));
-        let response = ureq::get(&target)
-            .timeout(Duration::from_secs(10))
-            .call()
-            .unwrap();
-        if response.status() < 200 || response.status() > 299 {
-            return Err(format!("Request failed: {}", response.status_text()));
+        println!("Target is {}", target);
+        let agent: ureq::Agent = ureq::Agent::config_builder()
+            .timeout_global(Some(Duration::from_secs(10)))
+            .build()
+            .into();
+        let mut response = agent.get(&target).call().unwrap();
+        if !response.status().is_success() {
+            return Err(format!("Request failed: {}", response.status().as_str()));
         }
         // let places = response.into_string();
-        let places = response.into_json::<Vec<Place>>();
+        let places = response.body_mut().read_json::<Vec<Place>>();
         // let forecast = response.into_string();
         match places {
             Ok(json) => Ok(json),
@@ -209,6 +214,13 @@ mod tests {
     #[test]
     fn test_places_error() {
         let client = MeteoFranceClient::new();
+        // Unknown name
+        let result = client.search_places("not-a-town-name", None, None).unwrap();
+        assert!(result.is_empty());
+        println!(
+            "Places search for \"not-a-town-name\"\n---\n{:#?}\n---\n",
+            result
+        );
         // Unknown name
         let result = client.search_places("Not a town name", None, None).unwrap();
         assert!(result.is_empty());
