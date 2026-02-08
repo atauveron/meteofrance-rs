@@ -42,11 +42,11 @@ impl MeteoFranceClient {
             .timeout_global(Some(Duration::from_secs(10)))
             .build()
             .into();
-        let mut response = agent.get(&target).call().unwrap();
+        let response = agent.get(&target).call().unwrap();
         if !response.status().is_success() {
             return Err(format!("Request failed: {}", response.status().as_str()));
         }
-        let forecast = response.body_mut().read_json::<ForecastResponse>();
+        let forecast = response.into_body().read_json::<ForecastResponse>();
         match forecast {
             Ok(json) => Ok(json),
             Err(err) => Err(err.to_string()),
@@ -65,11 +65,11 @@ impl MeteoFranceClient {
             .timeout_global(Some(Duration::from_secs(10)))
             .build()
             .into();
-        let mut response = agent.get(&target).call().unwrap();
+        let response = agent.get(&target).call().unwrap();
         if !response.status().is_success() {
             return Err(format!("Request failed: {}", response.status().as_str()));
         }
-        let forecast = response.body_mut().read_json::<ForecastResponseV2>();
+        let forecast = response.into_body().read_json::<ForecastResponseV2>();
         match forecast {
             Ok(json) => Ok(json),
             Err(err) => Err(err.to_string()),
@@ -88,11 +88,11 @@ impl MeteoFranceClient {
             .timeout_global(Some(Duration::from_secs(10)))
             .build()
             .into();
-        let mut response = agent.get(&target).call().unwrap();
+        let response = agent.get(&target).call().unwrap();
         if !response.status().is_success() {
             return Err(format!("Request failed: {}", response.status().as_str()));
         }
-        let forecast = response.body_mut().read_json::<RainResponse>();
+        let forecast = response.into_body().read_json::<RainResponse>();
         // let forecast = response.into_string();
         match forecast {
             Ok(json) => Ok(json),
@@ -114,12 +114,12 @@ impl MeteoFranceClient {
             .timeout_global(Some(Duration::from_secs(10)))
             .build()
             .into();
-        let mut response = agent.get(&target).call().unwrap();
+        let response = agent.get(&target).call().unwrap();
         if !response.status().is_success() {
             return Err(format!("Request failed: {}", response.status().as_str()));
         }
         // let places = response.into_string();
-        let places = response.body_mut().read_json::<Vec<Place>>();
+        let places = response.into_body().read_json::<Vec<Place>>();
         // let forecast = response.into_string();
         match places {
             Ok(json) => Ok(json),
@@ -131,9 +131,13 @@ impl MeteoFranceClient {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn test_forecast() {
         let client = MeteoFranceClient::new();
+        // Marseille
+        let result = client.get_forecast(43.30, 5.37, None).unwrap();
+        println!("Weather forecast for Marseille\n---\n{:#?}\n---\n", result);
         // Paris
         let result = client.get_forecast(48.85, 2.35, None).unwrap();
         println!("Weather forecast for Paris\n---\n{:#?}\n---\n", result);
@@ -143,10 +147,17 @@ mod tests {
         // Briançon
         let result = client.get_forecast(44.88, 6.63, None).unwrap();
         println!("Weather forecast for Briançon\n---\n{:#?}\n---\n", result);
+        // Aurillac
+        let result = client.get_forecast(44.93, 2.44, None).unwrap();
+        println!("Weather forecast for Aurillac\n---\n{:#?}\n---\n", result);
     }
+
     #[test]
     fn test_forecast_v2() {
         let client = MeteoFranceClient::new();
+        // Marseille
+        let result = client.get_forecast_v2(43.30, 5.37, None).unwrap();
+        println!("Weather forecast for Marseille\n---\n{:#?}\n---\n", result);
         // Paris
         let result = client.get_forecast_v2(48.85, 2.35, None).unwrap();
         println!("Weather forecast for Paris\n---\n{:#?}\n---\n", result);
@@ -156,10 +167,17 @@ mod tests {
         // Briançon
         let result = client.get_forecast_v2(44.88, 6.63, None).unwrap();
         println!("Weather forecast for Briançon\n---\n{:#?}\n---\n", result);
+        // Aurillac
+        let result = client.get_forecast_v2(44.93, 2.44, None).unwrap();
+        println!("Weather forecast for Aurillac\n---\n{:#?}\n---\n", result);
     }
+
     #[test]
     fn test_rain() {
         let client = MeteoFranceClient::new();
+        // Marseille
+        let result = client.get_rain(43.30, 5.37, None).unwrap();
+        println!("Rain forecast for Marseille\n---\n{:#?}\n---\n", result);
         // Paris
         let result = client.get_rain(48.85, 2.35, None).unwrap();
         println!("Rain forecast for Paris\n---\n{:#?}\n---\n", result);
@@ -169,7 +187,11 @@ mod tests {
         // Briançon
         let result = client.get_rain(44.88, 6.63, None).unwrap();
         println!("Rain forecast for Briançon\n---\n{:#?}\n---\n", result);
+        // Aurillac
+        let result = client.get_rain(44.93, 2.44, None).unwrap();
+        println!("Rain forecast for Aurillac\n---\n{:#?}\n---\n", result);
     }
+
     #[test]
     fn test_places_name() {
         let client = MeteoFranceClient::new();
@@ -182,7 +204,21 @@ mod tests {
         // Briançon
         let result = client.search_places("Briançon", None, None).unwrap();
         println!("Places search for \"Briançon\"\n---\n{:#?}\n---\n", result);
+
+        // Saint-Denis (dash in name)
+        let result = client.search_places("Saint-Denis", None, None).unwrap();
+        println!(
+            "Places search for \"Saint-Denis\"\n---\n{:#?}\n---\n",
+            result
+        );
+        // Le Bourget (space in name)
+        let result = client.search_places("Le Bourget", None, None).unwrap();
+        println!(
+            "Places search for \"Le Bourget\"\n---\n{:#?}\n---\n",
+            result
+        );
     }
+
     #[test]
     fn test_places_lat_lon() {
         let client = MeteoFranceClient::new();
@@ -211,6 +247,7 @@ mod tests {
             result
         );
     }
+
     #[test]
     fn test_places_error() {
         let client = MeteoFranceClient::new();

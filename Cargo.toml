@@ -6,7 +6,7 @@ description = "An unofficial client library for Météo-France's API"
 repository = "https://github.com/atauveron/meteofrance-rs"
 license = "MIT"
 readme = "README.md"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 chrono = "0.4"
